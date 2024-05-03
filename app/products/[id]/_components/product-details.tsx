@@ -4,6 +4,15 @@ import Cart from "@/app/_components/cart";
 import DeliveryInfo from "@/app/_components/delivery-info";
 import DiscountBadge from "@/app/_components/discount-badge";
 import ProductList from "@/app/_components/product-list";
+import {
+  AlertDialog,
+  AlertDialogTitle,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogDescription,
+} from "@/app/_components/ui/alert-dialog";
 import { Button } from "@/app/_components/ui/button";
 import {
   Sheet,
@@ -40,10 +49,26 @@ const ProductDetails = ({
 }: ProductDetailsProps) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const { addProductToCart } = useContext(CartContext);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState(false);
+  const { addProductToCart, products } = useContext(CartContext);
 
-  const handleAddToProductCick = () => {
-    addProductToCart(product, quantity);
+  const handleAddToProductClick = () => {
+    const hansDifferentRestaurantProduct = products.some(
+      (cartProduct) => cartProduct.restaurantId !== product.restaurantId,
+    );
+
+    if (hansDifferentRestaurantProduct) {
+      return setIsConfirmationDialogOpen(true);
+    }
+
+    addToCart({
+      emptyCart: false,
+    });
+  };
+
+  const addToCart = ({ emptyCart }: { emptyCart?: boolean }) => {
+    addProductToCart({ product, quantity, emptyCart });
     setIsCartOpen(true);
   };
 
@@ -124,7 +149,7 @@ const ProductDetails = ({
           <ProductList products={complementaryProducts} />
         </div>
 
-        <div className="mt-6 px-5" onClick={handleAddToProductCick}>
+        <div className="mt-6 px-5" onClick={handleAddToProductClick}>
           <Button className="w-full font-semibold">Adicionar a sacola</Button>
         </div>
       </div>
@@ -137,6 +162,27 @@ const ProductDetails = ({
           <Cart />
         </SheetContent>
       </Sheet>
+
+      <AlertDialog
+        open={isConfirmationDialogOpen}
+        onOpenChange={setIsConfirmationDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogTitle>
+            Você só pode adicionar itens de um restaurant por vez
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Deseja mesmo adicionar esse produto? Isso limpará sua sacola atual.
+          </AlertDialogDescription>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => addToCart({ emptyCart: true })}>
+              Esvaziar sacola e adicionar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
