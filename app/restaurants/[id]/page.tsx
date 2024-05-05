@@ -24,7 +24,7 @@ const RestaurantsPage = async ({ params: { id } }: RestaurantsPageProps) => {
           createdAt: "desc",
         },
         include: {
-          product: {
+          products: {
             where: {
               restaurantId: id,
             },
@@ -34,7 +34,7 @@ const RestaurantsPage = async ({ params: { id } }: RestaurantsPageProps) => {
           },
         },
       },
-      product: {
+      products: {
         take: 10,
         include: {
           restaurant: true,
@@ -88,14 +88,14 @@ const RestaurantsPage = async ({ params: { id } }: RestaurantsPageProps) => {
       <div className="mt-6 space-y-4 px-5">
         {/* TODO: mostrar produtos mais pedidos */}
         <h1 className="font-semibold">Mais pedidos</h1>
-        <ProductList products={restaurant.product} />
+        <ProductList products={restaurant.products} />
       </div>
 
       {restaurant.categories.map((category) => (
         <div className="mt-6 space-y-4 px-5" key={category.id}>
           {/* TODO: mostrar produtos mais pedidos */}
           <h1 className="font-semibold">{category.name}</h1>
-          <ProductList products={category.product} />
+          <ProductList products={category.products} />
         </div>
       ))}
 
