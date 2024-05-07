@@ -15,7 +15,7 @@ const CategoriesPage = async ({ params: { id } }: CategoriesPageProps) => {
       id,
     },
     include: {
-      product: {
+      products: {
         include: {
           restaurant: {
             select: {
@@ -36,7 +36,7 @@ const CategoriesPage = async ({ params: { id } }: CategoriesPageProps) => {
       <div className="px-6 py-6">
         <h2 className="mb-6 text-lg font-semibold">{category.name}</h2>
         <div className="grid grid-cols-2 gap-6">
-          {category?.product.map((product) => (
+          {category?.products.map((product) => (
             <ProductItem
               product={product}
               key={product.id}
